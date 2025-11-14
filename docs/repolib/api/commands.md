@@ -1,20 +1,31 @@
 # Chat Commands
 
-The vanilla game has added a debug console where you can input chat commands.
+Chat command can either be executed in the chat or chat and debug console depending on how you register your chat command.
+
+### Chat
+
+Typing a chat command in the chat requires you to start with a `/`
+
+### Debug Console
+
+The debug console is a new vanilla addition added in v0.3.0
 
 ::: info
 You must enable `DeveloperMode` in the config settings to enable access to the debug console.
 :::
 
 ::: info
-Debug console commands can be executed in the main menu.
+Debug console commands can be executed at any time, even in the main menu and lobby menu.
 :::
 
-Chat command can either be executed in the chat or chat and debug console depending on how you register your chat command.
-
-Typing chat commands in the chat requires you to start with a `/`, while typing chat commands in the debug console doesn't.
+Typing a chat command in the debug console doesn't require you to start with a `/`
 
 To open the debug console, press the grave key (`) located to the left of the 1 key, below the ESC key, and above the TAB key.
+
+Tips:
+- You can scroll up and down with the up/down arrow keys or scroll wheel. Also when an option is selected you can press tab to complete it
+- You can use middle mouse click to redo the previous command you executed
+- Items & valuables spawn at the closest level point whilst enemies spawn in a room nearby
 
 ## Registering Debug Commands
 
@@ -30,10 +41,12 @@ public class YourMod : BaseUnityPlugin
 {
     private void Awake()
     {
+        // Call your command's register method from your plugin's awake.
         MyCommand.Register();
     }
 }
 
+// Create a static class for your command logic.
 public static class MyCommand
 {
     public static void Register()
@@ -55,11 +68,11 @@ public static class MyCommand
             // The user must type the entire command name and a space before suggestions start showing.
             Suggest,
 
-            // This argument is optional.
+            // This argument is optional and true by default.
             // Function to determine if the command should be enabled.
             IsEnabled,
 
-            // This argument is optional.
+            // This argument is optional and true by default.
             // If true, the command will only be accessible in the debug console.
             debugOnly: false
         );
