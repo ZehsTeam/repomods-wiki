@@ -1,77 +1,125 @@
-# REPOLib Chat Commands
+# Chat Commands
 
-## Built-in Commands
+The vanilla game has added a debug console where you can input chat commands.
 
 ::: info
-You must enable `DeveloperMode` in the config settings to use developer mode commands.
+You must enable `DeveloperMode` in the config settings to enable access to the debug console.
 :::
 
-Chat commands currently only work in multiplayer since you need access to the in-game chat to use commands.
-
-REPOLib comes with a few built-in chat commands:
-
-### Spawn Valuable `/spawnvaluable <name>`
-
-This command will spawn a valuable in front of you.\
-Replace `<name>` with the name of the valuable prefab.\
-Names are not case-sensitive.\
-Example usage: `/spawnvaluable diamond`\
-This command has multiple aliases: `/spawnval`, `/sv`\
-<ins>**This command requires developer mode to be enabled.**</ins>\
-<ins>**This command is host-only!**</ins>
-
-### Spawn Item `/spawnitem <name>`
-
-This command will spawn an item in front of you.\
-Replace `<name>` with the name of the item or item prefab.\
-Names are not case-sensitive.\
-Example usage: `/spawnitem gun`\
-This command has one alias: `/si`\
-<ins>**This command requires developer mode to be enabled.**</ins>\
-<ins>**This command is host-only!**</ins>
-
-### Spawn Enemy `/spawnenemy <name>`
-
-This command will spawn an enemy on top of you after a few seconds.\
-Replace `<name>` with the name of the enemy or enemy prefab.\
-Names are not case-sensitive.\
-Example usage: `/spawnenemy huntsman`\
-This command has one alias: `/se`\
-<ins>**This command requires developer mode to be enabled.**</ins>\
-<ins>**This command is host-only!**</ins>
-
-::: tip
-Commands can be enabled/disabled in the config settings.
+::: info
+Debug console commands can be executed in the main menu.
 :::
 
-## Registering Custom Commands
+Chat command can either be executed in the chat or chat and debug console depending on how you register your chat command.
 
-Registering a chat /command:
+Typing chat commands in the chat requires you to start with a `/`, while typing chat commands in the debug console doesn't.
+
+To open the debug console, press the grave key (`) located to the left of the 1 key, below the ESC key, and above the TAB key.
+
+## Registering Debug Commands
+
+Registering a chat command:
 
 ```c#
-using REPOLib.Commands;
+using BepInEx;
+using System.Collections.Generic;
 
-public static class YourCommand
+[BepInPlugin("You.YourMod", "YourMod", "1.0.0")]
+[BepInDependency(REPOLib.MyPluginInfo.PLUGIN_GUID)]
+public class YourMod : BaseUnityPlugin
 {
-    // ...
-
-    [CommandInitializer]
-    public static void Initialize()
+    private void Awake()
     {
-        // Perform any setup or caching
+        MyCommand.Register();
+    }
+}
+
+public static class MyCommand
+{
+    public static void Register()
+    {
+        var cmd = new DebugCommandHandler.ChatCommand(
+            // The name of your command.
+            // This is what the user will type to execute it.
+            // The name should not include spaces.
+            "test",
+
+            // The description of your command.
+            "This is my test command",
+
+            // The execute function of your command.
+            Execute,
+
+            // This argument is optional.
+            // This will provide additional command argument suggestions as the user types.
+            // The user must type the entire command name and a space before suggestions start showing.
+            Suggest,
+
+            // This argument is optional.
+            // Function to determine if the command should be enabled.
+            IsEnabled,
+
+            // This argument is optional.
+            // If true, the command will only be accessible in the debug console.
+            debugOnly: false
+        );
+
+        REPOLib.Modules.Commands.RegisterCommand(cmd);
     }
 
-    [CommandExecution(
-        "Your Command Name",
-        "Description of what the command does and how to use it.",
-        enabledByDefault: true,
-        requiresDeveloperMode: false
-        )]
-    [CommandAlias("yourcommand")]
-    [CommandAlias("yourcmd")]
-    public static void Execute(string args)
+    // isDebugConsole will be true if the command is being executed for the debug console.
+    // args are additional options you can add to your command execution.
+    private static void Execute(bool isDebugConsole, string[] args)
     {
-        // ...
+        // You should call this function if your command executes successfully.
+        DebugCommandHandler.instance?.CommandSuccessEffect();
+
+        // You should call this function if your command execution fails.
+        DebugCommandHandler.instance?.CommandFailedEffect();
+    }
+
+    // The Suggest function will only be executed if your are typing your command in the debug console.
+    // You must write your command name and a space for the suggest function to start executing.
+    // Every characater you add or remove will execute the Suggest function.
+
+    // isDebugConsole will be true if the command is being executed from the debug console.
+    // partial is the latest argument string from args.
+    // args is the total list of arguments.
+    private static List<string> Suggest(bool isDebugConsole, string partial, string[] args)
+    {
+        // Return a list of possible arguments based on the current partial and args.
+        return [];
+    }
+
+    private static bool IsEnabled()
+    {
+        // Add logic here if you want to have your command be conditionally enabled.
+
+        // Disables your command in the main menu.
+        if (SemiFunc.IsSplashScreen() || SemiFunc.IsMainMenu())
+        {
+            return false;
+        }
+
+        // Disables your command in the lobby menu.
+        if (SemiFunc.RunIsLobbyMenu())
+        {
+            return false;
+        }
+
+        // Disables your command in the tutorial.
+        if (SemiFunc.RunIsTutorial())
+        {
+            return false;
+        }
+
+        // Disables your command if you are not the host.
+        if (!SemiFunc.IsMasterClientOrSingleplayer())
+        {
+            return false;
+        }
+
+        return true;
     }
 }
 ```
