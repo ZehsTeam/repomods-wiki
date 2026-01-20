@@ -20,7 +20,7 @@ Debug console commands can be executed at any time, even in the main menu and lo
 
 Typing a chat command in the debug console doesn't require you to start with a `/`
 
-To open the debug console, press the grave key (`) located to the left of the 1 key, below the ESC key, and above the TAB key.
+To open the debug console, press the grave key (<kbd>`</kbd>) located to the left of the <kbd>1</kbd> key, below the <kbd>ESC</kbd> key, and above the <kbd>TAB</kbd> key.
 
 Tips:
 - You can scroll up and down with the up/down arrow keys or scroll wheel. Also when an option is selected you can press tab to complete it
