@@ -3,11 +3,14 @@
 Registering an item:
 
 ```c#
-private void Awake()
+using REPOLib.Objects.Sdk;
+
+private void awake()
 {
-    REPOLib.BundleLoader.LoadBundle("your_assetbundle_file_path", assetBundle => 
+    REPOLib.BundleLoader.LoadBundle("your_assetbundle_file_path", assetBundle =>
     {
-        var item = assetBundle.LoadAsset<Item>("your_item");
+        // The type ItemContent is from REPOLib.Objects.Sdk
+        var item = assetBundle.LoadAsset<ItemContent>("your_item_content");
         REPOLib.Modules.Items.RegisterItem(item);
     });
 }

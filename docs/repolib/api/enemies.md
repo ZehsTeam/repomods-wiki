@@ -3,12 +3,15 @@
 Registering an enemy:
 
 ```c#
+using REPOLib.Objects.Sdk;
+
 private void Awake()
 {
-    REPOLib.BundleLoader.LoadBundle("your_assetbundle_file_path", assetBundle => 
+    REPOLib.BundleLoader.LoadBundle("your_assetbundle_file_path", assetBundle =>
     {
-        var enemySetup = assetBundle.LoadAsset<EnemySetup>("your_enemy_setup");
-        REPOLib.Modules.Enemies.RegisterEnemy(enemySetup);
+        // The type EnemyContent is from REPOLib.Objects.Sdk
+        var enemyContent = assetBundle.LoadAsset<EnemyContent>("your_enemy_content");
+        REPOLib.Modules.Enemies.RegisterEnemy(enemyContent);
     });
 }
 ```
